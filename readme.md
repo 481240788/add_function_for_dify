@@ -62,7 +62,17 @@ cd docker
 cp .env.example .env
 ```
 
-根据实际需要修改 `.env` 中的配置，例如服务端口和相关密钥。具体配置要求以当前 Dify 版本为准。
+根据实际需要修改 `.env` 中的配置，例如服务端口和相关密钥。
+
+关于`DIFY_AGENT_LOCAL_SANDBOX_AUTH_TOKEN`使用：
+
+```Shell
+openssl rand -hex 32
+```
+
+随机生成即可。
+
+具体配置要求以当前 Dify 版本为准。
 
 ### 4. 启动 Dify
 
@@ -279,7 +289,7 @@ curl -G \
 | `/v1/statistics/daily-end-users`              | 每日终端用户数   |
 | `/v1/statistics/token-costs`                  | Token 消耗及费用 |
 | `/v1/statistics/average-session-interactions` | 平均会话交互次数 |
-| `/v1/statistics/user-satisfaction-rate`       | 用户满意         |
+| `/v1/statistics/user-satisfaction-rate`       | 用户满意<br />   |
 | `/v1/statistics/average-response-time`        | 平均响应时间     |
 | `/v1/statistics/tokens-per-second`            | Token 生成速度   |
 
