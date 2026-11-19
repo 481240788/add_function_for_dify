@@ -1,7 +1,3 @@
-openssl rand -hex 32# Dify Statistics API Extension
-
-基于**Dify v1.20.0**的Service API监测统计接口扩展项目。
-
 ## 项目背景
 
 Dify原生Console API已具备应用监测统计功能，可以在管理后台查看消息数量、会话数量、终端用户数、Token消耗以及响应性能等数据。
