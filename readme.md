@@ -331,7 +331,7 @@ curl -G \
 
 项目提供独立的 Python 测试脚本，涵盖接口功能、身份认证、参数校验、跨应用数据隔离、密钥撤销及 Completion 模式专项测试。
 
-详细配置与运行方式参见 [测试说明](tests/README.md)。
+详细配置与运行方式参见 [测试说明](statistics_tests/README.md)。
 
 ## 免责声明
 
