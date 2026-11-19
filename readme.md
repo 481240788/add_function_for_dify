@@ -1,4 +1,4 @@
-# Dify Statistics API Extension
+openssl rand -hex 32# Dify Statistics API Extension
 
 基于**Dify v1.20.0**的Service API监测统计接口扩展项目。
 
@@ -289,7 +289,7 @@ curl -G \
 | `/v1/statistics/daily-end-users`              | 每日终端用户数   |
 | `/v1/statistics/token-costs`                  | Token 消耗及费用 |
 | `/v1/statistics/average-session-interactions` | 平均会话交互次数 |
-| `/v1/statistics/user-satisfaction-rate`       | 用户满意<br />   |
+| `/v1/statistics/user-satisfaction-rate`       | 用户满意         |
 | `/v1/statistics/average-response-time`        | 平均响应时间     |
 | `/v1/statistics/tokens-per-second`            | Token 生成速度   |
 
@@ -298,7 +298,6 @@ curl -G \
 - `average-response-time` 接口仅支持对应的 Completion 应用模式，不支持时会返回 HTTP 400。
 - 统计数据根据 API Key 所属应用确定。
 - 修改 Python 源码后，需要重新构建镜像并重新创建 API 容器，修改才会在容器中生效。
-
 
 ## 兼容性说明
 
@@ -332,9 +331,3 @@ curl -G \
 项目提供独立的 Python 测试脚本，涵盖接口功能、身份认证、参数校验、跨应用数据隔离、密钥撤销及 Completion 模式专项测试。
 
 详细配置与运行方式参见 [测试说明](statistics_tests/README.md)。
-
-## 免责声明
-
-本项目为第三方开源扩展，与 Dify 官方无关联，也不代表 Dify 官方提供或维护的功能。
-
-使用前请确认目标版本的兼容性，并自行评估源码修改及部署风险。
