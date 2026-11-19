@@ -1,4 +1,4 @@
-# Dify Statistics API — 测试说明
+# 测试说明
 
 ## 1. 项目概述
 
