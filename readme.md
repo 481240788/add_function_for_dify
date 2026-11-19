@@ -1,7 +1,4 @@
 
-
-
-
 # Dify Statistics API Extension
 
 基于**Dify v1.20.0**的Service API监测统计接口扩展项目。
@@ -27,11 +24,214 @@ Dify原生Console API已具备应用监测统计功能，可以在管理后台�
 
 **注意：** 本项目是第三方二次开发扩展，并非 Dify 官方内置功能。
 
----
+## 部署说明
 
-# 部署说明
+本项目基于 **Dify v1.20.0**，通过二次开发扩展原生 Service API，增加 8 个应用监测统计接口。
 
-本项目基于 Dify v1.20.0，对原有 Service API 进行扩展，使第三方系统可以通过 Dify 原生应用 API Key 查询应用监测统计数据。
+根据是否已经部署 Dify，请选择对应方式：
+
+- **首次部署用户**：先完成下方的 Dify 环境安装和初始化，再进行源码修改与镜像构建。
+- **已有 Dify 环境的用户**：确认版本为 v1.20.0 后，可直接跳转至「修改源码」。
+
+### 一、首次部署 Dify
+
+#### 1. 安装 Docker 环境
+
+首先确保系统已经安装 Docker Engine 和 Docker Compose。
+
+检查版本：
+
+```bash
+docker --version
+docker compose version
+```
+
+确保 Docker 服务正常运行：
+
+```bash
+docker ps
+```
+
+如未安装，请参考 [Docker 官方安装文档](https://docs.docker.com/engine/install/)。
+
+#### 2. 下载 Dify 官方源码
+
+本扩展基于 Dify v1.20.0 开发，建议使用相同版本，避免不同版本之间出现接口注册方式或依赖不兼容的问题。
+
+```bash
+git clone https://github.com/langgenius/dify.git
+cd dify
+git checkout 1.20.0
+```
+
+#### 3. 初始化 Docker Compose 配置
+
+进入 Docker 部署目录：
+
+```bash
+cd docker
+cp .env.example .env
+```
+
+根据对应版本的 `.env.example` 和官方 Docker 部署文档，完成必要的环境变量配置。
+
+如使用该版本要求的 Agent Sandbox Token，请执行：
+
+```bash
+openssl rand -hex 32
+```
+
+将生成的随机字符串填入 `.env` 中对应的 `DIFY_AGENT_LOCAL_SANDBOX_AUTH_TOKEN`。
+
+**注意：** 不同 Dify 版本的环境变量结构可能有所不同，应以当前检出的 v1.20.0 版本为准。
+
+#### 4. 启动原版 Dify
+
+首次部署时，需要启动完整的 Dify 服务，而不只是 API 容器。
+
+```bash
+docker compose up -d
+```
+
+首次执行时，Docker 会下载所需镜像、创建网络和数据卷，并启动各个服务。
+
+查看容器状态：
+
+```bash
+docker compose ps -a
+```
+
+根据容器日志确认主要服务正常运行。
+
+#### 5. 初始化 Dify 管理后台
+
+默认 HTTP 端口为 80，具体以 Docker Compose 配置为准。
+
+本机访问：
+
+```text
+http://localhost/install
+```
+
+如果部署在虚拟机或远程服务器中，可以通过对应 IP 地址访问：
+
+```text
+http://<服务器IP>/install
+```
+
+按照页面提示创建管理员账号。
+
+进入 Dify 管理后台后，确认能够正常创建和访问应用，即表示基础环境部署完成。
+
+### 二、安装本项目的统计接口扩展
+
+Dify 基础环境正常运行后，继续按照本文后续章节操作：
+
+1. 下载 `add_function_for_dify` 扩展仓库。
+2. 将 `statistic.py` 添加到对应目录。
+3. 修改或替换 `service_api/__init__.py`。
+4. 重新构建自定义 API 镜像。
+5. 使用 Docker Compose 覆盖 API 服务镜像。
+6. 重新创建 API 容器。
+7. 使用应用 API Key 测试新增统计接口。
+
+### 三、首次部署与已有部署的区别
+
+| 项目                  | 首次部署 | 已有部署     |
+| --------------------- | -------- | ------------ |
+| 下载 Dify 源码        | 需要     | 视情况       |
+| 配置 `.env`         | 需要     | 保留现有配置 |
+| 启动完整 Dify 服务    | 需要     | 通常不需要   |
+| 初始化管理后台        | 需要     | 不需要       |
+| 修改 Service API 源码 | 需要     | 需要         |
+| 构建自定义镜像        | 需要     | 需要         |
+| 替换 API 容器         | 需要     | 需要         |
+
+**重要说明：**
+
+- 首次部署时不能只运行 `docker compose up -d --no-deps api`，因为数据库、Redis 等依赖服务可能尚未创建。
+- 已有部署环境不要直接覆盖原来的 `.env` 文件。
+- 修改源码后必须重新构建 API 镜像，才能使新增接口生效。
+- 如果应用没有产生消息或会话数据，统计接口可能正常返回空结果，这不一定是程序错误。
+
+## 首次部署 Dify（未部署过的用户）
+
+如果尚未安装和部署 Dify，需要先完成以下步骤，再按照后续章节进行 Service API 扩展。
+
+### 1. 安装 Docker 和 Docker Compose
+
+首先确保系统已安装 Docker Engine 和 Docker Compose。
+
+```bash
+docker --version
+docker compose version
+```
+
+如果尚未安装，请参考 [Docker 官方安装文档](https://docs.docker.com/engine/install/)。
+
+### 2. 下载 Dify 源码
+
+本项目适用于 **Dify v1.20.0**，(之前版本暂未测试，但是应该大差不差)建议使用对应版本的源码。
+
+```bash
+git clone --branch 1.20.0 --depth 1 https://github.com/langgenius/dify.git
+cd dify
+```
+
+### 3. 初始化 Docker Compose 配置
+
+进入 Docker 部署目录：
+
+```bash
+cd docker
+cp .env.example .env
+```
+
+根据实际需要修改 `.env` 中的配置，例如服务端口和相关密钥。具体配置要求以当前 Dify 版本为准。
+
+### 4. 启动 Dify
+
+首次部署需要启动完整的 Dify 服务，包括 API、Worker、Web、PostgreSQL、Redis 等组件。
+
+```bash
+docker compose up -d
+```
+
+首次启动时会自动拉取相关 Docker 镜像，可能需要一定时间。
+
+检查容器运行状态：
+
+```bash
+docker compose ps
+```
+
+### 5. 初始化 Dify 管理后台
+
+容器正常启动后，在浏览器访问：
+
+```text
+http://localhost/install
+```
+
+如果部署在虚拟机或远程服务器中，需要使用对应的 IP 地址：
+
+```text
+http://<服务器IP>/install
+```
+
+按照页面提示创建管理员账号，完成 Dify 初始化。
+
+### 6. 继续安装本项目扩展
+
+确认 Dify 能够正常访问后，返回源码根目录：
+
+```bash
+cd ..
+```
+
+接下来按照下方的 **「一、修改源码」** 及后续章节操作，添加统计接口、构建自定义 API 镜像并更新 Docker Compose 配置。
+
+**注意：** 首次部署需要先启动完整的 Dify 服务。后续章节中的 `--no-deps --force-recreate api` 仅用于重新创建 API 容器，不能代替首次部署过程。
 
 ## 一、修改源码
 
